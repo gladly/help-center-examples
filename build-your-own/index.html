@@ -1,0 +1,174 @@
+<html>
+  <head>
+    <title>Gladly Build Your Own Help Center Demo</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <style type="text/css">
+      #container {
+        overflow: hidden;
+        width: 90%;
+        margin: auto;
+      }
+      #toc {
+        width: 20%;
+        float: left;
+      }
+      #toc a {
+        display: block;
+      }
+      #results {
+        width: calc(80% - 20px);
+        float: left;
+        margin-left: 20px;
+      }
+      #search-container {
+        width: 90%;
+        margin: auto;
+        display: block;
+        position: relative;
+      }
+      #search {
+        width: 100%;
+        padding: 10px;
+      }
+      #search-results {
+        position: absolute;
+        background-color: white;
+        top: 40px;
+        width: calc(100% - 10px);
+        left: 0px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        margin: auto;
+        display: none;
+      }
+      #search-results a {
+        display: block;
+      }
+      body {
+        font-family: Inter, Arial, sans-serif;
+        font-size: 13px;
+      }
+    </style>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        const HELP_CENTER_ID = '1HMgRNORQb-uRkDSc5uTyg'; //insert your help center ID from production here
+        const ORG_ID = 'bME1BFFNQuSXPpfLivZLBg'; //insert your organization ID from production here
+        const ORG_URL = 'gladlysupport.gladly.com'; //insert your organization URL from production here
+
+        $.ajax({
+          url: `https://cdn.gladly.com/orgs/configs/help-center/${HELP_CENTER_ID}.json`,
+          success: function(hc) {
+            let language = hc.lng;
+            let audience = hc.audienceId;
+
+            $.ajax({
+              url: `https://${ORG_URL}/api/v1/orgs/${ORG_ID}/help-center/${HELP_CENTER_ID}/answer-titles?lng=${language}&audienceId=${audience}`,
+              success: function(answerTitles) {
+                for(let i = 0; i < hc.sections.length; i++) {
+                  let thisSection = hc.sections[i];
+
+                  let thisSectionDiv = $('<div></div>').addClass('section');
+                  $(thisSectionDiv).append(
+                    $('<h2></h2>').text(thisSection.header),
+                    $('<div></div>')
+                  );
+
+                  for(let j = 0; j < thisSection.answerIds.length; j++) {
+                    let thisAnswerId = thisSection.answerIds[j];
+                    let answer = findAnswer(thisAnswerId);
+
+                    if(answer) {
+                      $(thisSectionDiv).find('div').append(
+                        $('<a href="javascript:;"></a>').text(answer.name).click(function() {
+                          retrieveAnswer(answer.id);
+                        })
+                      );
+                    }
+                  }
+
+                  $('#toc').append(thisSectionDiv);
+                }
+
+                $('#search-container').blur(function() {
+                  $('#search-results').hide();
+                });
+
+                $('#search').keyup(function() {
+                  search();
+                });
+
+                $('#search').focus(function() {
+                  search();
+                });
+
+                function search() {
+                  let searchQuery = $('#search').val();
+
+                  if(!searchQuery) {
+                    return $('#search-results').hide();
+                  }
+
+                  $.ajax({
+                    url: `https://${ORG_URL}/api/v1/orgs/${ORG_ID}/answers/search?q=${encodeURIComponent(searchQuery)}&audienceId=${audience}&lng=${language}`,
+                    success: function(results) {
+                      if(!results.length) {
+                        $('#search-results').hide();
+                        return;
+                      }
+
+                      $('#search-results').html('');
+                      $('#search-results').show();
+
+                      for(let i = 0; i < results.length; i++) {
+                        $('#search-results').append(
+                          $('<a href="javascript:;"></a>').click(function() {
+                            retrieveAnswer(results[i].id);
+                          }).html(results[i].name)
+                        )
+                      }
+                    }
+                  })
+                }
+
+                function retrieveAnswer(answerId) {
+                  $.ajax({
+                    url: `https://${ORG_URL}/api/v1/orgs/${ORG_ID}/answers/${answerId}?lng=${language}`,
+                    success: function(answer) {
+                      $('#results').html(answer.bodyHtml);
+                      $('#results').prepend(
+                        $('<h1></h1>').text(answer.name)
+                      );
+                      $('#search-results').hide();
+                    }
+                  })
+                }
+
+                function findAnswer(answerId) {
+                  for(let i = 0; i < answerTitles.length; i++) {
+                    if(answerTitles[i].id == answerId) {
+                      return answerTitles[i];
+                    }
+                  }
+
+                  return {};
+                }
+              }
+            });
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="gladly-help-center">
+      <div id="search-container">
+        <input id="search" placeholder="search query"/>
+        <div id="search-results"></div>
+      </div>
+      <div id="container">
+        <div id="toc"></div>
+        <div id="results"></div>
+      </div>
+    </div>
+  </body>
+</html>

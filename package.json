@@ -1,0 +1,9 @@
+{
+  "name": "help-center-examples",
+  "version": "1.0.0",
+  "description": "Sample Gladly Help Center examples",
+  "license": "ISC",
+  "author": "elizaw",
+  "homepage": "https://github.com/gladly/help-center-examples#readme",
+  "dependencies": {}
+}
