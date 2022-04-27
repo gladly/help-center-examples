@@ -25,12 +25,12 @@ You don't have to build your own Help Center! You could simply embed the Gladly 
 
 # Setup
 
-Open up `index.html` in your favorite code editor
+Open up `build-your-own/index.html` in your favorite code editor
 
 1. Set `HELP_CENTER_ID` to your Help Center ID. You can get this value from the Settings > Help Center page in Gladly, then clicking on the 3 dots next to the Help Center and clicking on Embed. The Help Center ID is the value in `brandId`
 2. Set `ORG_ID` to your Organization ID. You can get this value from the [GET Organization](https://developer.gladly.com/rest/#operation/getOrganization) API
 3. Set `ORG_URL` to your organization URL. This is the **domain part only** of the `gladlyUrl` value in the [GET Organization](https://developer.gladly.com/rest/#operation/getOrganization) API response body. For example, if `gladlyUrl` here is set to `https://gladly.us-1.gladly.com`, the `ORG_URL` should be `gladly.us-1.gladly.com`
-4. Open `index.html` in Chrome
+4. Open `build-your-own/index.html` in Chrome
 
 # How It's Built
 
