@@ -109,7 +109,7 @@
                   }
 
                   $.ajax({
-                    url: `https://${ORG_URL}/api/v1/orgs/${ORG_ID}/answers/search?q=${encodeURIComponent(searchQuery)}&audienceId=${audience}&lng=${language}`,
+                    url: `https://${ORG_URL}/api/v1/orgs/${ORG_ID}/answers-search?q=${encodeURIComponent(searchQuery)}&audienceId=${audience}&lng=${language}`,
                     success: function(results) {
                       if(!results.length) {
                         $('#search-results').hide();
